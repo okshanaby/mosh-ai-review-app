@@ -1,13 +1,14 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import chatRouter from './src/routes/chat.router';
+
+import appRouter from './src/routes/index.routes';
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
-app.use('/api/v1/chat', chatRouter);
+app.use('/api/v1', appRouter);
 
 export default app;
 
