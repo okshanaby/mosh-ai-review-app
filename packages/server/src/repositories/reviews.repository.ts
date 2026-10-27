@@ -33,4 +33,12 @@ export const reviewsRepository = {
 
     return result;
   },
+  // FIND PRODUCT SUMMARY
+  async findProductReviewSummary(productId: number) {
+    const result = await db.orm.public.Summary.where({
+      productId,
+    }).first();
+
+    return result;
+  },
 };

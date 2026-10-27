@@ -11,6 +11,15 @@ export const reviewsService = {
   },
   // SUMMARIZE PRODUCT REVIEWS
   async summarizeProductReviews(productId: number) {
+    const existingSummary = await reviewsRepository.findProductReviewSummary(productId);
+
+    if (
+      existingSummary &&
+      Temporal.Instant.compare(existingSummary.expiresAt, Temporal.Now.instant()) > 0
+    ) {
+      return existingSummary.content;
+    }
+
     const reviews = await reviewsRepository.findAllProductReviews(productId, 10);
     const joinedReview = reviews.map((r) => r.content).join('\n\n');
     const prompt = promptTemplate.replace('{{joinedReview}}', joinedReview);
