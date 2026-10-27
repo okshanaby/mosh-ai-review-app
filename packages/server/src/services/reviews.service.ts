@@ -1,6 +1,7 @@
 import { llmClient } from '../llm/client';
 import { reviewsRepository } from '../repositories/reviews.repository';
 import promptTemplate from '../prompts/reviewSummary.txt';
+import { productsRepository } from '../repositories/products.repository';
 
 // Public Interface
 export const reviewsService = {
@@ -21,6 +22,7 @@ export const reviewsService = {
     }
 
     const reviews = await reviewsRepository.findAllProductReviews(productId, 10);
+
     const joinedReview = reviews.map((r) => r.content).join('\n\n');
     const prompt = promptTemplate.replace('{{joinedReview}}', joinedReview);
 

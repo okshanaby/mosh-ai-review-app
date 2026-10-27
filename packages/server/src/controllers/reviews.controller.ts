@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import { reviewsService } from '../services/reviews.service';
+import { productsService } from '../services/products.service';
 
 // Public interfae
 export const reviewsController = {
@@ -51,9 +52,40 @@ export const reviewsController = {
     );
 
     const productId = Number(req.params.id);
-
     if (isNaN(productId)) {
       const error = 'Invalid Product ID';
+
+      res.status(400).json({
+        error,
+      });
+
+      console.error(
+        '================= GET: /api/v1/products/:id/reviews/summarize - ERROR =========================='
+      );
+      console.error(error);
+
+      return;
+    }
+
+    const product = await productsService.getProductbyId(productId);
+    if (!product) {
+      const error = 'Product Not Found';
+
+      res.status(400).json({
+        error,
+      });
+
+      console.error(
+        '================= GET: /api/v1/products/:id/reviews/summarize - ERROR =========================='
+      );
+      console.error(error);
+
+      return;
+    }
+
+    const productReviews = await reviewsService.getProductReviews(productId);
+    if (!productReviews.length) {
+      const error = 'There are no reviews to summarize';
 
       res.status(400).json({
         error,

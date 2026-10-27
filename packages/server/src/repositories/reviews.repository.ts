@@ -3,12 +3,12 @@ import { db } from '../prisma/db';
 // Public Interface
 export const reviewsRepository = {
   // FIND ALL PRODUCT REVIEWS
-  async findAllProductReviews(productId: number, limit?: number) {
+  async findAllProductReviews(productId: number, limit: number = 10) {
     const results = await db.orm.public.Review.where({
       productId,
     })
       .orderBy((review) => review.createdAt.desc())
-      .limit(limit!)
+      .limit(limit)
       .all();
 
     return results;
