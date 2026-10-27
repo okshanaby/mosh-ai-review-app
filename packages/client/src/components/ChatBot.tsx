@@ -14,7 +14,7 @@ const popAudio = new Audio(popSound);
 popAudio.volume = 0.2;
 
 const notificationAudio = new Audio(notificationSound);
-notificationAudio.volume = 0.2;
+notificationAudio.volume = 0.4;
 
 type ChatResponse = {
   message: string;

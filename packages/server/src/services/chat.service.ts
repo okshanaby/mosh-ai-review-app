@@ -1,13 +1,13 @@
 import { readFileSync } from 'node:fs';
 
 import { conversationRepository } from '../repositories/conversation.repository';
-import template from '../prompts/chatbot.txt';
+import promptTemplate from '../prompts/chatbot.txt';
 import { llmClient } from '../llm/client';
 
 const instructionFileURL = new URL('../prompts/WonderWorld.md', import.meta.url);
 const instructionData = readFileSync(instructionFileURL, 'utf8');
 
-const instructions = template.replace('{{parkInfo}}', instructionData);
+const instructions = promptTemplate.replace('{{parkInfo}}', instructionData);
 
 type ChatResponse = {
   id: string;
