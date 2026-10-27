@@ -14,6 +14,11 @@ export const reviewsService = {
     const reviews = await reviewsRepository.findAllProductReviews(productId, 10);
     const joinedReview = reviews.map((r) => r.content).join('\n\n');
     const prompt = promptTemplate.replace('{{joinedReview}}', joinedReview);
-    return (await llmClient.generateText({ input: prompt })).text;
+
+    const { text: summary } = await llmClient.generateText({ input: prompt });
+
+    const result = await reviewsRepository.upsertReviewSummary(productId, summary);
+
+    return result.content;
   },
 };
