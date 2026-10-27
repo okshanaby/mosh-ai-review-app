@@ -1,0 +1,484 @@
+[
+  {
+    "id": "dropTable.Review",
+    "label": "Drop table \"Review\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Review"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Review\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Review\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Review\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"Review\"",
+        "sql": "DROP TABLE \"public\".\"Review\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Review\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Review\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Review\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropTable.Summary",
+    "label": "Drop table \"Summary\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Summary"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Summary\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Summary\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Summary\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"Summary\"",
+        "sql": "DROP TABLE \"public\".\"Summary\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Summary\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Summary\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Summary\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropTable.Product",
+    "label": "Drop table \"Product\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Product\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Product\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Product\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"Product\"",
+        "sql": "DROP TABLE \"public\".\"Product\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Product\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Product\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Product\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.products",
+    "label": "Create table \"products\"",
+    "summary": "Creates table \"products\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "products"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"products\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"products\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"products\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"products\"",
+        "sql": "CREATE TABLE \"public\".\"products\" (\n  \"description\" text,\n  \"id\" SERIAL NOT NULL,\n  \"name\" character varying(255) NOT NULL,\n  \"price\" float8 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"products\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"products\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"products\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.reviews",
+    "label": "Create table \"reviews\"",
+    "summary": "Creates table \"reviews\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "reviews"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"reviews\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reviews\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"reviews\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"reviews\"",
+        "sql": "CREATE TABLE \"public\".\"reviews\" (\n  \"author\" character varying(255) NOT NULL,\n  \"content\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"productId\" int4 NOT NULL,\n  \"rating\" int2 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"reviews\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"reviews\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"reviews\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.summaries",
+    "label": "Create table \"summaries\"",
+    "summary": "Creates table \"summaries\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "summaries"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"summaries\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"summaries\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"summaries\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"summaries\"",
+        "sql": "CREATE TABLE \"public\".\"summaries\" (\n  \"content\" text NOT NULL,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"generatedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"productId\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"summaries\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"summaries\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"summaries\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "unique.summaries.summaries_productId_key",
+    "label": "Add unique constraint on \"summaries\" (productId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "summaries_productId_key",
+        "table": "summaries"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"summaries_productId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "summaries_productId_key",
+          "public",
+          "\"public\".\"summaries\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"summaries_productId_key\" on \"summaries\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"summaries_productId_key\"",
+        "sql": "ALTER TABLE \"public\".\"summaries\" ADD CONSTRAINT \"summaries_productId_key\" UNIQUE (\"productId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"summaries_productId_key\" exists on (productId)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "summaries_productId_key",
+          "public",
+          "\"public\".\"summaries\"",
+          "u",
+          "[\"productId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.reviews.reviews_productId_idx_5858600a",
+    "label": "Create index \"reviews_productId_idx_5858600a\" on \"reviews\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "reviews_productId_idx_5858600a",
+        "table": "reviews"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"reviews_productId_idx_5858600a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reviews_productId_idx_5858600a\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"reviews_productId_idx_5858600a\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"reviews_productId_idx_5858600a\"",
+        "sql": "CREATE INDEX \"reviews_productId_idx_5858600a\" ON \"public\".\"reviews\" (\"productId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"reviews_productId_idx_5858600a\" exists on \"reviews\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"reviews_productId_idx_5858600a\"",
+          "i",
+          "I",
+          "\"public\".\"reviews\"",
+          "btree",
+          "[\"productId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.reviews.reviews_productId_fkey",
+    "label": "Add foreign key \"reviews_productId_fkey\" on \"reviews\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "reviews_productId_fkey",
+        "table": "reviews"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"reviews_productId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "reviews_productId_fkey",
+          "public",
+          "\"public\".\"reviews\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"reviews_productId_fkey\" on \"reviews\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"reviews_productId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"reviews\"\nADD CONSTRAINT \"reviews_productId_fkey\"\nFOREIGN KEY (\"productId\")\nREFERENCES \"public\".\"products\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"reviews_productId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "reviews_productId_fkey",
+          "public",
+          "\"public\".\"reviews\"",
+          "f",
+          "[\"productId\"]",
+          "\"public\".\"products\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.summaries.summaries_productId_fkey",
+    "label": "Add foreign key \"summaries_productId_fkey\" on \"summaries\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "summaries_productId_fkey",
+        "table": "summaries"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"summaries_productId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "summaries_productId_fkey",
+          "public",
+          "\"public\".\"summaries\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"summaries_productId_fkey\" on \"summaries\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"summaries_productId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"summaries\"\nADD CONSTRAINT \"summaries_productId_fkey\"\nFOREIGN KEY (\"productId\")\nREFERENCES \"public\".\"products\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"summaries_productId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "summaries_productId_fkey",
+          "public",
+          "\"public\".\"summaries\"",
+          "f",
+          "[\"productId\"]",
+          "\"public\".\"products\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  }
+]

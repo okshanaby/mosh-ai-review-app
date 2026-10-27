@@ -4,15 +4,15 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
-    "Product": {
+    "products": {
       "model": "Product",
       "namespace": "public"
     },
-    "Review": {
+    "reviews": {
       "model": "Review",
       "namespace": "public"
     },
-    "Summary": {
+    "summaries": {
       "model": "Summary",
       "namespace": "public"
     }
@@ -40,8 +40,11 @@
               "name": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 255
+                  }
                 }
               },
               "price": {
@@ -101,7 +104,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "Product"
+              "table": "products"
             }
           },
           "Review": {
@@ -109,8 +112,11 @@
               "author": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 255
+                  }
                 }
               },
               "content": {
@@ -144,7 +150,7 @@
               "rating": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/int4@1",
+                  "codecId": "pg/int2@1",
                   "kind": "scalar"
                 }
               }
@@ -189,7 +195,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "Review"
+              "table": "reviews"
             }
           },
           "Summary": {
@@ -267,7 +273,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "Summary"
+              "table": "summaries"
             }
           }
         }
@@ -279,7 +285,7 @@
       "public": {
         "entries": {
           "table": {
-            "Product": {
+            "products": {
               "columns": {
                 "description": {
                   "codecId": "pg/text@1",
@@ -296,9 +302,12 @@
                   "nullable": false
                 },
                 "name": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
+                  "codecId": "sql/varchar@1",
+                  "dataType": "pg/varchar",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 255
+                  }
                 },
                 "price": {
                   "codecId": "pg/float8@1",
@@ -315,12 +324,15 @@
               },
               "uniques": []
             },
-            "Review": {
+            "reviews": {
               "columns": {
                 "author": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
+                  "codecId": "sql/varchar@1",
+                  "dataType": "pg/varchar",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 255
+                  }
                 },
                 "content": {
                   "codecId": "pg/text@1",
@@ -351,29 +363,29 @@
                   "nullable": false
                 },
                 "rating": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
+                  "codecId": "pg/int2@1",
+                  "dataType": "pg/int2",
                   "nullable": false
                 }
               },
               "foreignKeys": [
                 {
                   "index": {
-                    "name": "Review_productId_idx_5858600a"
+                    "name": "reviews_productId_idx_5858600a"
                   },
                   "source": {
                     "columns": [
                       "productId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "Review"
+                    "tableName": "reviews"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "Product"
+                    "tableName": "products"
                   }
                 }
               ],
@@ -382,8 +394,8 @@
                   "columns": [
                     "productId"
                   ],
-                  "name": "Review_productId_idx_5858600a",
-                  "prefix": "Review_productId_idx",
+                  "name": "reviews_productId_idx_5858600a",
+                  "prefix": "reviews_productId_idx",
                   "unique": false
                 }
               ],
@@ -394,7 +406,7 @@
               },
               "uniques": []
             },
-            "Summary": {
+            "summaries": {
               "columns": {
                 "content": {
                   "codecId": "pg/text@1",
@@ -442,14 +454,14 @@
                       "productId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "Summary"
+                    "tableName": "summaries"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "Product"
+                    "tableName": "products"
                   }
                 }
               ],
@@ -473,7 +485,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "98038b36350e4e1c9843a2f4d6cb26c4358bf264956ee3f837f456a2c797d498"
+    "storageHash": "1528a55bc041e3ed4ed21850533c671fae79273265dbd02917cf93600622c2fe"
   },
   "capabilities": {
     "postgres": {

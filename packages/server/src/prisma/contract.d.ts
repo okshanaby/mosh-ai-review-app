@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'98038b36350e4e1c9843a2f4d6cb26c4358bf264956ee3f837f456a2c797d498'>;
+  StorageHashBase<'1528a55bc041e3ed4ed21850533c671fae79273265dbd02917cf93600622c2fe'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -325,7 +325,7 @@ type ContractBase = Omit<
         readonly kind: 'postgres-schema';
         readonly entries: {
           readonly table: {
-            readonly Product: {
+            readonly products: {
               columns: {
                 readonly description: {
                   readonly dataType: 'pg/text';
@@ -344,9 +344,10 @@ type ContractBase = Omit<
                   readonly many: false;
                 };
                 readonly name: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
+                  readonly dataType: 'pg/varchar';
+                  readonly codecId: 'sql/varchar@1';
                   readonly nullable: false;
+                  readonly typeParams: { readonly length: 255 };
                   readonly many: false;
                 };
                 readonly price: {
@@ -361,12 +362,13 @@ type ContractBase = Omit<
               indexes: readonly [];
               foreignKeys: readonly [];
             };
-            readonly Review: {
+            readonly reviews: {
               columns: {
                 readonly author: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
+                  readonly dataType: 'pg/varchar';
+                  readonly codecId: 'sql/varchar@1';
                   readonly nullable: false;
+                  readonly typeParams: { readonly length: 255 };
                   readonly many: false;
                 };
                 readonly content: {
@@ -399,8 +401,8 @@ type ContractBase = Omit<
                   readonly many: false;
                 };
                 readonly rating: {
-                  readonly dataType: 'pg/int4';
-                  readonly codecId: 'pg/int4@1';
+                  readonly dataType: 'pg/int2';
+                  readonly codecId: 'pg/int2@1';
                   readonly nullable: false;
                   readonly many: false;
                 };
@@ -409,8 +411,8 @@ type ContractBase = Omit<
               uniques: readonly [];
               indexes: readonly [
                 {
-                  readonly name: 'Review_productId_idx_5858600a';
-                  readonly prefix: 'Review_productId_idx';
+                  readonly name: 'reviews_productId_idx_5858600a';
+                  readonly prefix: 'reviews_productId_idx';
                   readonly columns: readonly ['productId'];
                   readonly unique: false;
                 },
@@ -419,18 +421,18 @@ type ContractBase = Omit<
                 {
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'Review';
+                    readonly tableName: 'reviews';
                     readonly columns: readonly ['productId'];
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'Product';
+                    readonly tableName: 'products';
                     readonly columns: readonly ['id'];
                   };
                 },
               ];
             };
-            readonly Summary: {
+            readonly summaries: {
               columns: {
                 readonly content: {
                   readonly dataType: 'pg/text';
@@ -475,12 +477,12 @@ type ContractBase = Omit<
                 {
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'Summary';
+                    readonly tableName: 'summaries';
                     readonly columns: readonly ['productId'];
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'Product';
+                    readonly tableName: 'products';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -497,9 +499,9 @@ type ContractBase = Omit<
   readonly target: 'postgres';
   readonly targetFamily: 'sql';
   readonly roots: {
-    readonly Product: { readonly namespace: 'public' & NamespaceId; readonly model: 'Product' };
-    readonly Review: { readonly namespace: 'public' & NamespaceId; readonly model: 'Review' };
-    readonly Summary: { readonly namespace: 'public' & NamespaceId; readonly model: 'Summary' };
+    readonly products: { readonly namespace: 'public' & NamespaceId; readonly model: 'Product' };
+    readonly reviews: { readonly namespace: 'public' & NamespaceId; readonly model: 'Review' };
+    readonly summaries: { readonly namespace: 'public' & NamespaceId; readonly model: 'Summary' };
   };
   readonly domain: {
     readonly namespaces: {
@@ -517,7 +519,11 @@ type ContractBase = Omit<
               };
               readonly name: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 255 };
+                };
               };
               readonly price: {
                 readonly nullable: false;
@@ -550,7 +556,7 @@ type ContractBase = Omit<
               };
             };
             readonly storage: {
-              readonly table: 'Product';
+              readonly table: 'products';
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly description: { readonly column: 'description' };
@@ -564,7 +570,11 @@ type ContractBase = Omit<
             readonly fields: {
               readonly author: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 255 };
+                };
               };
               readonly content: {
                 readonly nullable: false;
@@ -587,7 +597,7 @@ type ContractBase = Omit<
               };
               readonly rating: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int2@1' };
               };
             };
             readonly relations: {
@@ -605,7 +615,7 @@ type ContractBase = Omit<
               };
             };
             readonly storage: {
-              readonly table: 'Review';
+              readonly table: 'reviews';
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly author: { readonly column: 'author' };
@@ -661,7 +671,7 @@ type ContractBase = Omit<
               };
             };
             readonly storage: {
-              readonly table: 'Summary';
+              readonly table: 'summaries';
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly content: { readonly column: 'content' };

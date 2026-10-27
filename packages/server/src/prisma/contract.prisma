@@ -1,7 +1,8 @@
 // use prisma-8
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
+  @@map("products")
+  id          Int          @id @default(autoincrement())
+  name        VarChar(255)
   description String?
   price       Float
   reviews     Review[]
@@ -9,16 +10,18 @@ model Product {
 }
 
 model Review {
-  id        Int      @id @default(autoincrement())
-  author    String
-  rating    Int
+  @@map("reviews")
+  id        Int          @id @default(autoincrement())
+  author    VarChar(255)
+  rating    SmallInt
   content   String
-  createdAt DateTime @default(now())
+  createdAt DateTime     @default(now())
   productId Int
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product      @relation(fields: [productId], references: [id])
 }
 
 model Summary {
+  @@map("summaries")
   id          Int      @id @default(autoincrement())
   content     String
   generatedAt DateTime @default(now())
