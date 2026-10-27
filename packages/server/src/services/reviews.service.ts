@@ -1,10 +1,5 @@
+import { llmClient } from '../llm/client';
 import { reviewsRepository } from '../repositories/reviews.repository';
-import OpenAI from 'openai';
-
-// Implementation details
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 // Public Interface
 export const reviewsService = {
@@ -22,14 +17,9 @@ export const reviewsService = {
      ${joinedReview}
     `;
 
-    const response = await client.responses.create({
-      model: 'gpt-4o-mini',
-      input: prompt,
-      temperature: 0.2,
-      max_output_tokens: 200,
-    });
+    const response = await llmClient.generateText({ input: prompt });
 
-    const summary = response.output_text;
+    const summary = response.text;
 
     return summary;
   },
