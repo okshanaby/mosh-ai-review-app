@@ -10,18 +10,29 @@ export const reviewsService = {
     const reviews = await reviewsRepository.findAllProductReviews(productId);
     return reviews;
   },
+  // GET ALL PRODUCT REVIEWS with SUMMARY
+  async getProductReviewsAndSummary(productId: number) {
+    const reviews = await reviewsRepository.findAllProductReviews(productId);
+    const summary = await reviewsRepository.findProductReviewSummary(productId);
+
+    return {
+      summary,
+      reviews,
+    };
+  },
   // SUMMARIZE PRODUCT REVIEWS
   async summarizeProductReviews(productId: number) {
     const existingSummary = await reviewsRepository.findProductReviewSummary(productId);
 
-    if (
-      existingSummary &&
-      Temporal.Instant.compare(existingSummary.expiresAt, Temporal.Now.instant()) > 0
-    ) {
-      return existingSummary.content;
+    if (existingSummary) {
+      return existingSummary;
     }
 
     const reviews = await reviewsRepository.findAllProductReviews(productId, 10);
+
+    if (reviews.length === 0) {
+      throw new Error('There are no reviews to summarize');
+    }
 
     const joinedReview = reviews.map((r) => r.content).join('\n\n');
     const prompt = promptTemplate.replace('{{joinedReview}}', joinedReview);

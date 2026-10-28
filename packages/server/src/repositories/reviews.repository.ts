@@ -35,10 +35,14 @@ export const reviewsRepository = {
   },
   // FIND PRODUCT SUMMARY
   async findProductReviewSummary(productId: number) {
+    const now = Temporal.Now.instant();
+
     const result = await db.orm.public.Summary.where({
       productId,
-    }).first();
+    })
+      .where((review) => review.expiresAt.gt(now))
+      .first();
 
-    return result;
+    return result ? result.content : null;
   },
 };

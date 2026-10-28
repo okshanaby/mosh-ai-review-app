@@ -12,30 +12,43 @@ export const reviewsController = {
 
     const productId = Number(req.params.id);
 
-    if (isNaN(productId)) {
+    if (!Number.isSafeInteger(productId) || productId <= 0) {
       const error = 'Invalid Product ID';
-
-      res.status(400).json({
-        error,
-      });
 
       console.error(
         '================= GET: /api/v1/products/:id/reviews - ERROR =========================='
       );
       console.error(error);
 
-      return;
+      return res.status(400).json({
+        error,
+      });
     }
 
     try {
-      const reviews = await reviewsService.getProductReviews(productId);
+      const product = await productsService.getProductbyId(productId);
+      if (!product) {
+        const error = 'Product Not Found';
+
+        console.error(
+          '================= GET: /api/v1/products/:id/reviews - ERROR =========================='
+        );
+        console.error(error);
+
+        return res.status(404).json({
+          error,
+        });
+      }
+
+      const { summary, reviews } = await reviewsService.getProductReviewsAndSummary(productId);
 
       console.info(
         '================= GET: /api/v1/products/:id/reviews - RESPONDED =========================='
       );
 
-      res.json({
-        results: reviews,
+      res.status(200).json({
+        summary,
+        reviews,
       });
     } catch (error) {
       console.error(
@@ -52,68 +65,56 @@ export const reviewsController = {
     );
 
     const productId = Number(req.params.id);
-    if (isNaN(productId)) {
+    if (!Number.isSafeInteger(productId) || productId <= 0) {
       const error = 'Invalid Product ID';
 
-      res.status(400).json({
-        error,
-      });
-
       console.error(
         '================= GET: /api/v1/products/:id/reviews/summarize - ERROR =========================='
       );
       console.error(error);
 
-      return;
-    }
-
-    const product = await productsService.getProductbyId(productId);
-    if (!product) {
-      const error = 'Product Not Found';
-
-      res.status(400).json({
+      return res.status(400).json({
         error,
       });
-
-      console.error(
-        '================= GET: /api/v1/products/:id/reviews/summarize - ERROR =========================='
-      );
-      console.error(error);
-
-      return;
-    }
-
-    const productReviews = await reviewsService.getProductReviews(productId);
-    if (!productReviews.length) {
-      const error = 'There are no reviews to summarize';
-
-      res.status(400).json({
-        error,
-      });
-
-      console.error(
-        '================= GET: /api/v1/products/:id/reviews/summarize - ERROR =========================='
-      );
-      console.error(error);
-
-      return;
     }
 
     try {
+      const product = await productsService.getProductbyId(productId);
+      if (!product) {
+        const error = 'Product Not Found';
+
+        console.error(
+          '================= GET: /api/v1/products/:id/reviews/summarize - ERROR =========================='
+        );
+        console.error(error);
+
+        return res.status(404).json({
+          error,
+        });
+      }
+
       const summary = await reviewsService.summarizeProductReviews(productId);
 
       console.info(
         '================= GET: /api/v1/products/:id/reviews/summarize - RESPONDED =========================='
       );
 
-      res.json({
+      res.status(200).json({
         summary,
       });
     } catch (error) {
       console.error(
         '================= GET: /api/v1/products/:id/reviews/summarize - ERROR =========================='
       );
+
+      if (error instanceof Error && error.message === 'There are no reviews to summarize') {
+        return res.status(404).json({
+          error: error.message,
+        });
+      }
+
       console.error(error);
+
       return res.status(500).json({ error: 'Failed to summarize this product reviews, try again' });
     }
   },
