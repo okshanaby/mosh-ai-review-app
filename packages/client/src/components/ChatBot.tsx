@@ -52,7 +52,7 @@ function ChatBot() {
   };
 
   return (
-    <div className="space-y-10 h-full flex flex-col">
+    <div className="flex-1 h-full space-y-10 flex flex-col">
       <div className="flex flex-col gap-4 flex-1 overflow-y-auto">
         <ChatMessages messages={messages} />
         {isBotTyping && <TypingIndicator />}
