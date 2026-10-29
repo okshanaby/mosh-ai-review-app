@@ -1,63 +1,55 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
 import StartRating from './StartRating';
 import Skeleton from 'react-loading-skeleton';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Button } from '../ui/button';
+import { HiSparkles } from 'react-icons/hi2';
+import toast from 'react-hot-toast';
+import { reviewsApi, type ReviewResponse } from './reviewsApi';
 
 type ReviewListProps = {
-  productId: string;
-};
-
-type Review = {
-  id: string;
-  author: string;
-  content: string;
-  rating: number;
-  createdAt: string;
-};
-
-type ReviewResponse = {
-  summary: string | null;
-  reviews: Review[];
+  productId: number;
 };
 
 const ReviewList = ({ productId }: ReviewListProps) => {
-  const [reviews, setReviews] = useState<ReviewResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading, error } = useQuery<ReviewResponse>({
+    queryKey: ['reveiws', productId],
+    queryFn: () => reviewsApi.fetchReviews(productId),
+  });
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const { data } = await axios.get(`/api/v1/products/${productId}/reviews/`);
-        setReviews(data);
-      } catch (error) {
-        console.error(error);
-        setError('Coulnot load the reviews. Please try again');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchReviews();
-  }, [productId]);
-
-  if (loading) {
+  if (isLoading) {
     return <ReviewSkeleton />;
   }
 
   if (error) {
-    return <p className="text-red-500">Error: {error}</p>;
+    if (axios.isAxiosError(error)) {
+      console.log('🚀 ~ ReviewList ~ error:', error.response);
+      console.error('👉 Server Response Data:', error.response?.data);
+    }
+
+    if (axios.isAxiosError(error) && error.response?.data) {
+      const serverMessage = error.response.data.message || error.response.data.error;
+
+      return (
+        <p className="text-red-500">
+          Error: {serverMessage || 'Could not load reviews. Please try again.'}
+        </p>
+      );
+    }
+  }
+
+  if (!data?.reviews.length) {
+    return null;
   }
 
   return (
     <div>
       <div className="space-y-3">
-        <div className="">{reviews?.summary}</div>
+        <div className="">
+          {data.summary ? data.summary : <SummarizeReviews productId={productId} />}
+        </div>
         <div className="space-y-3">
-          {reviews?.reviews.map((review) => (
+          {data?.reviews.map((review) => (
             <div key={review.id}>
               <p className="font-semibold">{review.author}</p>
               <StartRating value={review.rating} />
@@ -66,6 +58,48 @@ const ReviewList = ({ productId }: ReviewListProps) => {
           ))}
         </div>
       </div>
+    </div>
+  );
+};
+
+const SummarizeReviews = ({ productId }: ReviewListProps) => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: reviewsApi.summarizeReview,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reveiws', productId] });
+    },
+    onError: (error) => {
+      if (axios.isAxiosError(error)) {
+        console.log('🚀 ~ SummarizeReviews ~ error:', error.response);
+        console.error('👉 Server Response Data:', error.response?.data);
+        toast.error(
+          error.response?.data.error ? error.response.data.error : 'Failed to summarize review'
+        );
+      } else {
+        toast.error('Failed to summarize review');
+      }
+    },
+  });
+
+  return (
+    <div className="space-y-3">
+      <Button
+        onClick={() => mutation.mutate(productId)}
+        className="cursor-pointer"
+        disabled={mutation.isPending}
+      >
+        <HiSparkles /> {mutation.isPending ? 'Loading...' : 'Summarize'}
+      </Button>
+      {mutation.isPending ? (
+        <div className="space-y-1">
+          <Skeleton width="95%" height={18} />
+          <Skeleton width="95%" height={18} />
+          <Skeleton width="95%" height={18} />
+          <Skeleton width="45%" height={18} />
+        </div>
+      ) : null}
     </div>
   );
 };
